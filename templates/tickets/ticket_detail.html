@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ ticket.title }} - SupportDesk{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 3fr 1fr; gap: 2rem;">
+  <!-- Left Column: Ticket Info & Conversation -->
+  <div>
+    <div class="card" style="margin-bottom: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: start;">
+        <h1 style="margin-top: 0;">{{ ticket.title }}</h1>
+      </div>
+      <p style="color: #666; font-size: 0.9rem;">
+        Created by <strong>{{ ticket.created_by.username }}</strong> on {{ ticket.created_at|date:"M d, Y H:i" }}
+      </p>
+      <hr style="border: 0; border-top: 1px solid #eee; margin: 1rem 0;">
+      <div style="font-size: 1.1rem; line-height: 1.6;">
+        {{ ticket.description|linebreaks }}
+      </div>
+    </div>
+
+    <h3>Conversation</h3>
+    {% for comment in ticket.comments.all %}
+    <div class="card"
+      style="margin-bottom: 1rem; {% if comment.author.is_support_staff %}border-left: 4px solid #667eea;{% endif %}">
+      <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <strong>
+          {{ comment.author.username }}
+          {% if comment.author.is_support_staff %}
+          <span
+            style="background: #667eea; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">STAFF</span>
+          {% endif %}
+        </strong>
+        <span style="color: #999; font-size: 0.85rem;">{{ comment.created_at|date:"M d, H:i" }}</span>
+      </div>
+      <div>{{ comment.text|linebreaks }}</div>
+    </div>
+    {% empty %}
+    <p style="color: #777; font-style: italic;">No comments yet.</p>
+    {% endfor %}
+
+    <div class="card" style="margin-top: 2rem;">
+      <h4>Add a Reply</h4>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Post Reply</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Column: Meta & Controls -->
+  <div>
+    <div class="card">
+      <h4 style="margin-top: 0;">Ticket Info</h4>
+      <p><strong>Status:</strong> {{ ticket.status }}</p>
+      <p><strong>Priority:</strong>
+        <span style="{% if ticket.priority == 'High' %}color: #dc3545; font-weight: bold;{% endif %}">
+          {{ ticket.priority }}
+        </span>
+      </p>
+      <p><strong>Assigned To:</strong> {{ ticket.assigned_to.username|default:"Unassigned" }}</p>
+    </div>
+
+    {% if user.is_support_staff or user.is_superuser %}
+    <div class="card" style="margin-top: 1rem; border: 1px solid #667eea;">
+      <h4 style="margin-top: 0; color: #667eea;">Staff Actions</h4>
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="status_update" value="true">
+        {{ status_form.as_p }}
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Update Status</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

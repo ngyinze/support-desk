@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - SupportDesk{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+  <h1>Dashboard</h1>
+  {% if not user.is_support_staff %}
+  <a href="{% url 'create_ticket' %}" class="btn btn-primary">+ New Ticket</a>
+  {% endif %}
+</div>
+
+<div class="card">
+  {% if tickets %}
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="text-align: left; border-bottom: 2px solid #f4f7f6;">
+        <th style="padding: 1rem;">Title</th>
+        <th style="padding: 1rem;">Status</th>
+        <th style="padding: 1rem;">Priority</th>
+        <th style="padding: 1rem;">Created By</th>
+        <th style="padding: 1rem;">Date</th>
+        <th style="padding: 1rem;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticket in tickets %}
+      <tr style="border-bottom: 1px solid #f4f7f6;">
+        <td style="padding: 1rem; font-weight: 600;">{{ ticket.title }}</td>
+        <td style="padding: 1rem;">
+          <span style="padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.85rem; 
+                                {% if ticket.status == 'Pending' %}background: #ffeeba; color: #856404;
+                                {% elif ticket.status == 'Ongoing' %}background: #b8daff; color: #004085;
+                                {% elif ticket.status == 'Resolved' %}background: #c3e6cb; color: #155724;
+                                {% else %}background: #d6d8db; color: #383d41;{% endif %}">
+            {{ ticket.status }}
+          </span>
+        </td>
+        <td style="padding: 1rem;">
+          <span style="
+                                {% if ticket.priority == 'High' %}color: #dc3545; font-weight: bold;
+                                {% elif ticket.priority == 'Medium' %}color: #ffc107;
+                                {% else %}color: #28a745;{% endif %}">
+            {{ ticket.priority }}
+          </span>
+        </td>
+        <td style="padding: 1rem;">{{ ticket.created_by.username }}</td>
+        <td style="padding: 1rem;">{{ ticket.created_at|date:"M d, Y" }}</td>
+        <td style="padding: 1rem;">
+          <a href="{% url 'ticket_detail' ticket.pk %}" style="color: #667eea; font-weight: 600;">View</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p style="text-align: center; color: #777;">No tickets found.</p>
+  {% endif %}
+</div>
+{% endblock %}

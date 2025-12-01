@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}New Ticket - SupportDesk{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+  <h2 style="margin-bottom: 1.5rem;">Create New Ticket</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="margin-top: 1.5rem;">
+      <button type="submit" class="btn btn-primary">Submit Ticket</button>
+      <a href="{% url 'ticket_list' %}" style="margin-left: 1rem; color: #777;">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

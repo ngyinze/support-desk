@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - SupportDesk{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 2rem auto;">
+  <h2 style="text-align: center; margin-bottom: 1.5rem;">Create Account</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% if form.errors %}
+    <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+      <p style="margin: 0; font-weight: bold;">Please correct the errors below:</p>
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    {% for field in form %}
+    <div style="margin-bottom: 1rem;">
+      {{ field.label_tag }}
+      {{ field }}
+      {% if field.errors %}
+      <div style="color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;">
+        {{ field.errors }}
+      </div>
+      {% endif %}
+      {% if field.help_text %}
+      <div style="color: #6c757d; font-size: 0.75rem; margin-top: 0.25rem;">
+        {{ field.help_text|safe }}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary" style="width: 100%;">Sign Up</button>
+  </form>
+  <p style="text-align: center; margin-top: 1rem;">
+    Already have an account? <a href="{% url 'login' %}" style="color: #667eea;">Login</a>
+  </p>
+</div>
+{% endblock %}
